@@ -3,10 +3,10 @@
 require_once 'debug_helper.php';
 
 // Database credentials - temporary for testing
-$db_host = 'localhost';
-$db_name = 'u911550082_canada_imm'; // Update with your actual database name
-$db_user = 'u911550082_admin';      // Update with your actual database username
-$db_pass = 'YourPassword123';       // Update with your actual database password
+$db_host = '193.203.184.121';
+$db_name = 'u911550082_immigration'; 
+$db_user = 'u911550082_immigration';      
+$db_pass = 'Ro4=ey?^'; 
 
 echo "<h1>Database Diagnostic Tool</h1>";
 echo "<p>Attempting to connect to database: $db_name as user: $db_user on host: $db_host</p>";

@@ -2,13 +2,10 @@
 // Include the debug helper at the very top
 require_once 'debug_helper.php';
 
-// Try to identify the database connection issue
+// Set a flag for development mode
+$debug_mode = true;
+
 try {
-    // Check if db_config.php exists
-    if (!file_exists('includes/db_config.php')) {
-        throw new Exception('Database configuration file (includes/db_config.php) is missing');
-    }
-    
     // Include the database connection
     require_once 'includes/db_config.php';
     
@@ -17,130 +14,56 @@ try {
         throw new Exception('Database connection failed: ' . ($conn->connect_error ?? 'Unknown error'));
     }
     
-    // Continue with the rest of your index.php code
-    include 'includes/header.php';
-?>
-
-<main>
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <h1>Your Gateway to Canadian Immigration</h1>
-            <p>Professional guidance for all your Canadian visa and immigration needs</p>
-            <div class="cta-buttons">
-                <a href="booking/schedule.php" class="btn btn-primary">Book a Consultation</a>
-                <a href="visa_types/express_entry.php" class="btn btn-secondary">Explore Visa Options</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Services Overview -->
-    <section class="services-overview">
-        <div class="container">
-            <h2>Our Immigration Services</h2>
-            <div class="services-grid">
-                <div class="service-card">
-                    <img src="assets/images/work-visa.jpg" alt="Work Visa">
-                    <h3>Work Visas</h3>
-                    <p>Comprehensive assistance for skilled workers, temporary workers, and business immigrants.</p>
-                    <a href="visa_types/work_visa.php">Learn More</a>
+    // Basic page structure
+    echo "<!DOCTYPE html>
+    <html lang='en'>
+    <head>
+        <meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <title>Canada Immigration Consultancy</title>
+        <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet'>
+    </head>
+    <body>
+        <div class='container mt-5'>
+            <div class='row'>
+                <div class='col-12'>
+                    <h1>Canada Immigration Consultancy</h1>
+                    <p>Welcome to our website. We're currently working on some improvements.</p>
                 </div>
-                <div class="service-card">
-                    <img src="assets/images/study-visa.jpg" alt="Study Visa">
-                    <h3>Study Permits</h3>
-                    <p>Guidance for international students seeking education opportunities in Canada.</p>
-                    <a href="visa_types/study_visa.php">Learn More</a>
+            </div>";
+    
+    // Check if testimonials table exists and has data
+    $testimonials_check = $conn->query("SHOW TABLES LIKE 'testimonials'");
+    if ($testimonials_check->num_rows > 0) {
+        $testimonials_count = $conn->query("SELECT COUNT(*) FROM testimonials")->fetch_row()[0];
+        echo "<div class='row mt-4'>
+                <div class='col-12'>
+                    <h2>Testimonials</h2>
+                    <p>We have {$testimonials_count} testimonials in our database.</p>
                 </div>
-                <div class="service-card">
-                    <img src="assets/images/express-entry.jpg" alt="Express Entry">
-                    <h3>Express Entry</h3>
-                    <p>Navigate the Express Entry system for skilled immigrants with our expert assistance.</p>
-                    <a href="visa_types/express_entry.php">Learn More</a>
+              </div>";
+    }
+    
+    // Check if blog_posts table exists and has data
+    $blog_check = $conn->query("SHOW TABLES LIKE 'blog_posts'");
+    if ($blog_check->num_rows > 0) {
+        $blog_count = $conn->query("SELECT COUNT(*) FROM blog_posts")->fetch_row()[0];
+        echo "<div class='row mt-4'>
+                <div class='col-12'>
+                    <h2>Blog Posts</h2>
+                    <p>We have {$blog_count} blog posts in our database.</p>
                 </div>
-                <div class="service-card">
-                    <img src="assets/images/family-sponsorship.jpg" alt="Family Sponsorship">
-                    <h3>Family Sponsorship</h3>
-                    <p>Reunite with your family members through Canada's family sponsorship programs.</p>
-                    <a href="visa_types/family_sponsorship.php">Learn More</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Assessment Tools -->
-    <section class="assessment-tools">
-        <div class="container">
-            <h2>Free Immigration Assessment Tools</h2>
-            <div class="tools-grid">
-                <div class="tool-card">
-                    <h3>Visa Eligibility Calculator</h3>
-                    <p>Find out which Canadian immigration programs you may qualify for.</p>
-                    <a href="calculators/eligibility.php" class="btn">Check Eligibility</a>
-                </div>
-                <div class="tool-card">
-                    <h3>CRS Score Calculator</h3>
-                    <p>Calculate your Comprehensive Ranking System score for Express Entry.</p>
-                    <a href="calculators/crs_calculator.php" class="btn">Calculate Score</a>
-                </div>
-                <div class="tool-card">
-                    <h3>Study Permit Requirements</h3>
-                    <p>Verify if you meet the requirements for a Canadian study permit.</p>
-                    <a href="calculators/study_permit.php" class="btn">Check Requirements</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Success Stories -->
-    <section class="success-stories">
-        <div class="container">
-            <h2>Success Stories</h2>
-            <div class="testimonials-slider">
-                <?php 
-                try {
-                    include 'includes/testimonials_slider.php';
-                } catch (Throwable $e) {
-                    error_log("Error including testimonials: " . $e->getMessage());
-                    echo '<div class="alert alert-info">Success stories coming soon!</div>';
-                }
-                ?>
-            </div>
-            <a href="success_stories.php" class="btn btn-outline">View All Success Stories</a>
-        </div>
-    </section>
-
-    <!-- Latest News & Blog -->
-    <section class="latest-news">
-        <div class="container">
-            <h2>Latest Immigration News & Updates</h2>
-            <div class="news-grid">
-                <?php 
-                try {
-                    include 'includes/latest_news.php';
-                } catch (Throwable $e) {
-                    error_log("Error including latest news: " . $e->getMessage());
-                    echo '<div class="alert alert-info">News updates coming soon!</div>';
-                }
-                ?>
-            </div>
-            <a href="resources/news.php" class="btn btn-outline">View All News</a>
-        </div>
-    </section>
-</main>
-
-<?php 
-    include 'includes/footer.php';
+              </div>";
+    }
+    
+    // Close the HTML structure
+    echo "</div>
+        <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'></script>
+    </body>
+    </html>";
+    
 } catch (Exception $e) {
-    // This will be caught by our custom exception handler
+    // This will be caught by our custom exception handler in debug_helper.php
     throw $e;
 }
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <!-- Your head content -->
-</head>
-<body>
-    <!-- Your body content -->
-</body>
-</html> 
+?> 

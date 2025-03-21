@@ -6,10 +6,10 @@
  */
 
 // Database credentials
-$db_host = 'localhost';
-$db_name = 'u911550082_canada_imm'; // Update this with your actual database name
-$db_user = 'u911550082_admin';      // Update this with your actual database username
-$db_pass = 'YourPassword123';       // Update this with your actual database password
+$db_host = '193.203.184.121';
+$db_name = 'u911550082_immigration'; 
+$db_user = 'u911550082_immigration';      
+$db_pass = 'Ro4=ey?^'; 
 
 // Create connection
 $conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
