@@ -1,5 +1,23 @@
-<?php 
+<?php
+// Include the debug helper at the very top
+require_once 'debug_helper.php';
+
+// Try to identify the database connection issue
 try {
+    // Check if db_config.php exists
+    if (!file_exists('includes/db_config.php')) {
+        throw new Exception('Database configuration file (includes/db_config.php) is missing');
+    }
+    
+    // Include the database connection
+    require_once 'includes/db_config.php';
+    
+    // Check if the connection was successful
+    if (!isset($conn) || $conn->connect_error) {
+        throw new Exception('Database connection failed: ' . ($conn->connect_error ?? 'Unknown error'));
+    }
+    
+    // Continue with the rest of your index.php code
     include 'includes/header.php';
 ?>
 
@@ -112,12 +130,17 @@ try {
 
 <?php 
     include 'includes/footer.php';
-} catch (Throwable $e) {
-    // Simple error display if things go wrong before error handler loads
-    echo '<h1>An error occurred</h1>';
-    echo '<p>Please try again later. If the problem persists, contact the administrator.</p>';
-    
-    // Log the error
-    error_log("Uncaught exception in index.php: " . $e->getMessage());
+} catch (Exception $e) {
+    // This will be caught by our custom exception handler
+    throw $e;
 }
-?> 
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Your head content -->
+</head>
+<body>
+    <!-- Your body content -->
+</body>
+</html> 
