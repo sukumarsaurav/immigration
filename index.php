@@ -78,8 +78,14 @@ try {
         <div class="container">
             <h2>Success Stories</h2>
             <div class="testimonials-slider">
-                <!-- Testimonials will be loaded dynamically from the database -->
-                <?php include 'includes/testimonials_slider.php'; ?>
+                <?php 
+                try {
+                    include 'includes/testimonials_slider.php';
+                } catch (Throwable $e) {
+                    error_log("Error including testimonials: " . $e->getMessage());
+                    echo '<div class="alert alert-info">Success stories coming soon!</div>';
+                }
+                ?>
             </div>
             <a href="success_stories.php" class="btn btn-outline">View All Success Stories</a>
         </div>
@@ -90,8 +96,14 @@ try {
         <div class="container">
             <h2>Latest Immigration News & Updates</h2>
             <div class="news-grid">
-                <!-- News items will be loaded dynamically from the database -->
-                <?php include 'includes/latest_news.php'; ?>
+                <?php 
+                try {
+                    include 'includes/latest_news.php';
+                } catch (Throwable $e) {
+                    error_log("Error including latest news: " . $e->getMessage());
+                    echo '<div class="alert alert-info">News updates coming soon!</div>';
+                }
+                ?>
             </div>
             <a href="resources/news.php" class="btn btn-outline">View All News</a>
         </div>
