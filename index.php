@@ -1,4 +1,7 @@
-<?php include 'includes/header.php'; ?>
+<?php 
+try {
+    include 'includes/header.php';
+?>
 
 <main>
     <!-- Hero Section -->
@@ -95,4 +98,14 @@
     </section>
 </main>
 
-<?php include 'includes/footer.php'; ?> 
+<?php 
+    include 'includes/footer.php';
+} catch (Throwable $e) {
+    // Simple error display if things go wrong before error handler loads
+    echo '<h1>An error occurred</h1>';
+    echo '<p>Please try again later. If the problem persists, contact the administrator.</p>';
+    
+    // Log the error
+    error_log("Uncaught exception in index.php: " . $e->getMessage());
+}
+?> 

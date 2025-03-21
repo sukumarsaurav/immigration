@@ -1,5 +1,13 @@
 <?php
-session_start();
+// Include error handler first before any code execution
+require_once __DIR__ . '/error_handler.php';
+require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/db_connect.php';
+
+// Start the session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
