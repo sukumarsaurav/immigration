@@ -1,4 +1,12 @@
 <?php
+// Include error handler first
+require_once __DIR__ . '/error_handler.php';
+
+// Session handling
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 /**
  * Get the base URL for the website
  * 
@@ -46,7 +54,7 @@ function sanitizeInput($data) {
  * @return bool True if user is logged in, false otherwise
  */
 function isLoggedIn() {
-    return isset($_SESSION['user_id']);
+    return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
 }
 
 /**
@@ -187,4 +195,81 @@ function loadSeoSettings($page_identifier) {
     }
     
     return $settings;
+}
+
+/**
+ * Get a system setting from the database
+ * 
+ * @param string $key The setting key
+ * @param mixed $default Default value if setting is not found
+ * @param bool $public_only Whether to only return public settings
+ * @return mixed The setting value or default
+ */
+function getSystemSetting($key, $default = false, $public_only = false) {
+    global $conn;
+    
+    try {
+        $sql = "SELECT setting_value, setting_type FROM system_settings WHERE setting_key = ?";
+        if ($public_only) {
+            $sql .= " AND is_public = 1";
+        }
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $key);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $value = $row['setting_value'];
+            
+            // Convert value based on setting_type
+            switch ($row['setting_type']) {
+                case 'boolean':
+                    return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+                case 'number':
+                    return is_numeric($value) ? (strpos($value, '.') !== false ? (float)$value : (int)$value) : $default;
+                case 'json':
+                    $decoded = json_decode($value, true);
+                    return $decoded === null ? $default : $decoded;
+                default:
+                    return $value;
+            }
+        }
+        
+        return $default;
+    } catch (Exception $e) {
+        error_log("Error getting system setting '$key': " . $e->getMessage());
+        return $default;
+    }
+}
+
+/**
+ * Log activity for audit trail
+ * 
+ * @param int $user_id User ID
+ * @param string $action Action description
+ * @param string $ip_address IP address (optional)
+ */
+function logActivity($user_id, $action, $ip_address = null) {
+    global $conn;
+    
+    try {
+        if ($ip_address === null) {
+            $ip_address = $_SERVER['REMOTE_ADDR'] ?? '';
+        }
+        
+        $stmt = $conn->prepare("INSERT INTO activity_log (user_id, action, ip_address) VALUES (?, ?, ?)");
+        $stmt->bind_param("iss", $user_id, $action, $ip_address);
+        $stmt->execute();
+    } catch (Exception $e) {
+        error_log("Error logging activity: " . $e->getMessage());
+    }
+}
+
+/**
+ * Check if user has a specific user type
+ */
+function isUserType($type) {
+    return isset($_SESSION['user_type']) && $_SESSION['user_type'] === $type;
 } 
